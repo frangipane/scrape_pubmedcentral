@@ -11,11 +11,11 @@ The scraper works with a SQLite database adhering to the schema specified in cre
 
 Order of steps in pubmedcentral_scraper.R
 --------------------------
--User defines search terms (one set defining the topic, another set defining the plot type to capture) in pubmedcentral_scraper.R
--Retrieve Pubmed Central Id's (pmcid) from a query to Pubmed Central via eSearch.R
--Send each pmcid to scrapeArticle.R, which returns metadata for images matching the search terms.
--If an article contains at least one matching image, also capture the article metadata (e.g. title, journal, year, etc) via a call to eFetch.R
--Save results of scraping to SQLite database.
+- User defines search terms (one set defining the topic, another set defining the plot type to capture) in pubmedcentral_scraper.R
+- Retrieve Pubmed Central Id's (pmcid) from a query to Pubmed Central via eSearch.R
+- Send each pmcid to scrapeArticle.R, which returns metadata for images matching the search terms.
+- If an article contains at least one matching image, also capture the article metadata (e.g. title, journal, year, etc) via a call to eFetch.R
+- Save results of scraping to SQLite database.
 
 
 To visualize results of scraping
