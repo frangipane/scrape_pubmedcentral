@@ -16,7 +16,7 @@
 database.name = "testDb.sqlite"
 
 ## maximum number of results to retrieve from query
-retmax = 100
+retmax = 10
 
 ## topic terms to be queried via the pubmed search engine
 query.topic = c("trastuzumab","herceptin")
@@ -53,29 +53,9 @@ if(!dbExistsTable(con, "figure")) stop("table 'figure' does not exist")
 if(!dbExistsTable(con, "figure_text")) stop("table 'figure_text' does not exist")
 
 ##==================================================================
-## STRING TOGETHER SEARCH TERMS FOR QUERY ON PUBMED CENTRAL
-
-stringTerms = function(x) {
-  ## x is a vector of strings
-  ## paste quotation marks around each string element
-  x = paste0("\"",x,"\"")
-  longstring = paste(x, collapse="+OR+")
-  ## substitute '+' for spaces
-  longstring = gsub("\\s+", "\\+", longstring)
-  ## wrap entire long string in parentheses
-  longstring = paste0("(",longstring,")")
-  return(longstring)
-}
-
-query =paste(stringTerms(query.topic),
-             stringTerms(query.plottype),
-             sep="+AND+")
-query = paste0("term=",query)
-
-##==================================================================
 ## PERFORM SIMPLE SEARCH (eSearch) ON PUBMED CENTRAL AND
 ## RETRIEVE UID'S OUTPUT BY QUERY
-uids = eSearch(query, retmax)
+uids = eSearch(list(query.topic, query.plottype), retmax)
 print(paste0("Retrieved ", length(uids), " pmcids from query results."))
 
 ##==================================================================
