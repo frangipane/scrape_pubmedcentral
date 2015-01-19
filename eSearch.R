@@ -4,8 +4,9 @@
 
 ##==================================================================
 ## INPUT ARGUMENTS: 
-##  -query (string): keywords to be searched formatted according to ncbi
-##    eutils guidelines
+##  -searchterms (list): a list of length 2, containing sets of strings
+##    to be searched, where there should exist at least one match to each
+##    set of strings.  The order of the sets does not matter.
 ##  -nreturns (integer): maximum number of query records to retrieve,
 ##    up to a maximum of 10,000
 ##  -database (string): abbreviation for ncbi database to search (see ncbi
@@ -15,10 +16,12 @@
 ## OUTPUT: a vector of uid's/pmcid's (pubmed central id's)
 ##
 ## EXAMPLE:
-##  eSearch("term=(\"trastuzumab\"+OR+\"herceptin\")+AND+(\"tumor+growth\"\
-##          +OR+\"tumor+volume\"+OR+\"tumor+size\"+OR+\"tumor+inhibition\"\
-##          +OR+\"tumor+growth+inhibition\"+OR+\"tgi\"+OR+\"tumor+response\"\
-##          +OR+\"tumor+regression\")"), 10, "pmc", "relevance")
+##  eSearch(list(topic=c("trastuzumab","herceptin"),
+##                plottype=c("tumor growth", "tumor volume",
+##                          "tumor size", "tumor inhibition",
+##                          "tumor growth inhibition", "tgi",
+##                          "tumor response", "tumor regression")), 
+##          nreturns=10, database="pmc", sortby="relevance")
 
 ##==================================================================
 library("RCurl")
@@ -27,7 +30,24 @@ library("httr")
 library("rvest")
 library("stringr")
 
-eSearch = function(query, nreturns=10, database="pmc", sortby="relevance") {
+eSearch = function(searchterms, nreturns=10, database="pmc", sortby="relevance") {
+
+  ## STRING TOGETHER SEARCH TERMS TO FORM QUERY
+  stringTerms = function(x) {
+    ## x is a vector of strings
+    ## paste quotation marks around each string element
+    x = paste0("\"",x,"\"")
+    longstring = paste(x, collapse="+OR+")
+    ## substitute '+' for spaces
+    longstring = gsub("\\s+", "\\+", longstring)
+    ## wrap entire long string in parentheses
+    longstring = paste0("(",longstring,")")
+    return(longstring)
+  }
+  query = paste(sapply(searchterms, stringTerms), collapse="+AND+")
+  query = paste0("term=",query)
+  
+  ##==================================================================
   
   ## NCBI DATABASE - BASE URL OF API AND GENERAL API OPTIONS
   ## base eutils url
